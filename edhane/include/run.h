@@ -1,5 +1,5 @@
-#ifndef RUN_H
-#define RUN_H
+#ifndef EDHANE_RUN_H
+#define EDHANE_RUN_H
 
 enum class RunResult : int {
     NEXT = 2,           // event not yet resolved, keep searching for resolution
@@ -8,4 +8,4 @@ enum class RunResult : int {
     ERROR = -1          // error raised, shut down program
 };
 
-#endif // RUN_H
+#endif // EDHANE_RUN_H

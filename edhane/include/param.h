@@ -1,5 +1,5 @@
-#ifndef PARAM_H
-#define PARAM_H
+#ifndef EDHANE_PARAM_H
+#define EDHANE_PARAM_H
 
 #include <memory>
 #include <vector>
@@ -84,4 +84,4 @@ T Article::get_param_chain(std::vector<unsigned int>* keys) {
     }
 }
 
-#endif // PARAM_H
+#endif // EDHANE_PARAM_H

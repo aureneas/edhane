@@ -1,5 +1,5 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef EDHANE_INPUT_H
+#define EDHANE_INPUT_H
 
 #include <memory>
 #include <unordered_map>
@@ -33,7 +33,7 @@ protected:
     int crdmouse[2];           // the current coordinates of the mouse
     int crdl[2];               // the coordinates of the last left click
     int crdr[2];               // the coordinates of the last right click
-    unsigned short int tsprs[2];        // the number of frames since the last mouse button press
+    unsigned short int tsprs[3];        // the number of frames since the last mouse button press
     bool clrel[3];                      // whether the click has been released recently
 
     void set_input(unsigned int, bool);
@@ -49,4 +49,4 @@ public:
 
 };
 
-#endif // INPUT_H
+#endif // EDHANE_INPUT_H

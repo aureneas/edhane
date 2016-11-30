@@ -1,9 +1,9 @@
-#ifndef ENGINE_H
-#define ENGINE_H
+#ifndef EDHANE_ENGINE_H
+#define EDHANE_ENGINE_H
 
 #include "state.h"
 
 void init(State*);
 void run(State*);
 
-#endif // ENGINE_H
+#endif // EDHANE_ENGINE_H

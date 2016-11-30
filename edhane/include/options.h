@@ -1,5 +1,5 @@
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef EDHANE_OPTIONS_H
+#define EDHANE_OPTIONS_H
 
 #include "param.h"
 
@@ -12,4 +12,4 @@ public:
     int get_frame_rate();
 };
 
-#endif // OPTIONS_H
+#endif // EDHANE_OPTIONS_H

@@ -6,12 +6,6 @@
 #include <unordered_map>
 
 
-enum class ParamSpecific: unsigned int {
-    THIS = 0,
-    INHERIT = 1
-};
-
-
 struct Param {
     virtual ~Param() {}
 };
@@ -23,34 +17,36 @@ struct TypedParam: public Param {
 };
 
 
-class Parametrized {
+class Article {
 private:
-    Parametrized* inherit;
+    Article* inherit;
     std::unordered_map<unsigned int, std::shared_ptr<Param> > params;
 public:
-    Parametrized();
-    virtual void add_param(unsigned int, std::shared_ptr<Param>);
+    Article();
+    Article(Article*);
+    void set_inherit(Article*);
+
+    void add_param(unsigned int, std::shared_ptr<Param>);
     template <typename T> void set_param(unsigned int, T);
     template <typename T> unsigned int get_key(T);
     template <typename T> T get_param(unsigned int);
     bool check_param(unsigned int);
-};
 
-class Article: public Parametrized {
-public:
-    Article() {}
-    Article(Parametrized*);
-    template <typename T> T get_param_chain(std::vector<unsigned int>*);
+    void clear_params() { params.clear(); }
+    void remove_param(unsigned int);
+
+    void assimilate(Article*);
 };
 
 
 template <typename T>
-void Parametrized::set_param(unsigned int key, T value) {
-    set_param<Param*>(key, new TypedParam<T>(value));
+void Article::set_param(unsigned int key, T value) {
+    set_param<std::shared_ptr<Param> >(key, std::shared_ptr<Param>(new TypedParam<T>(value)));
 }
+template <> void Article::set_param<std::shared_ptr<Param> >(unsigned int, std::shared_ptr<Param>);
 
 template <typename T>
-unsigned int Parametrized::get_key(T value) {
+unsigned int Article::get_key(T value) {
     for (std::unordered_map<unsigned int, std::shared_ptr<Param> >::iterator it = params.begin(); it != params.end(); ++it) {
         if (TypedParam<T>* t = dynamic_cast<TypedParam<T>* >((it->second).get())) {
             if (t->data == value) {
@@ -62,8 +58,8 @@ unsigned int Parametrized::get_key(T value) {
 }
 
 template <typename T>
-T Parametrized::get_param(unsigned int key) {
-    Param* p = get_param<Param*>(key);
+T Article::get_param(unsigned int key) {
+    Param* p = get_param<std::shared_ptr<Param> >(key).get();
     if (TypedParam<T>* typed = dynamic_cast<TypedParam<T>*>(p)) {
         return typed->data;
     } else if (p == nullptr) {
@@ -72,16 +68,6 @@ T Parametrized::get_param(unsigned int key) {
         throw std::string("Member could not be casted to requested type.");
     }
 }
-
-
-template <typename T>
-T Article::get_param_chain(std::vector<unsigned int>* keys) {
-    Param* p = get_param_chain<Param*>(keys);
-    if (TypedParam<T>* typed = dynamic_cast<TypedParam<T>*>(p)) {
-        return typed->data;
-    } else {
-        throw std::string("Member could not be casted to requested type.");
-    }
-}
+template <> std::shared_ptr<Param> Article::get_param<std::shared_ptr<Param> >(unsigned int);
 
 #endif // EDHANE_PARAM_H

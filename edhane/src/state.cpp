@@ -1,5 +1,13 @@
 #include "../include/state.h"
 
+/*
+template <>
+void State::set_param<std::shared_ptr<Module> >(unsigned int key, std::shared_ptr<Module> value) {
+    modules.insert(value);
+    Article::set_param(key, value);
+}
+*/
+
 RunResult State::run(ALLEGRO_EVENT* e) {
     if (e->type == ALLEGRO_EVENT_TIMER) {
         return update_frame();
@@ -12,8 +20,8 @@ RunResult State::update_frame() {
     InputReceived ir = input.update_frame();
     RunResult rr;
     for (std::vector<std::shared_ptr<Module> >::iterator it = modules.begin(); it < modules.end(); ++it) {
-        rr = (*it)->update_event(ir);
-        (*it)->update_frame();
+        // rr = (*it)->update_event(ir);
+        // (*it)->update_frame();
     }
     return rr;
 }
@@ -22,7 +30,7 @@ RunResult State::update_event(ALLEGRO_EVENT* e) {
     InputReceived ir = input.update_event(e);
     RunResult rr;
     for (std::vector<std::shared_ptr<Module> >::iterator it = modules.begin(); it < modules.end(); ++it) {
-        rr = (*it)->update_event(ir);
+        // rr = (*it)->update_event(ir);
     }
     return rr;
 }

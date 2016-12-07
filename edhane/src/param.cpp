@@ -1,49 +1,47 @@
 #include "../include/param.h"
 
-Parametrized::Parametrized() {
-    set_param<std::shared_ptr<Parametrized> >((unsigned int)ParamSpecific::INHERIT, nullptr);
+Article::Article() {
     inherit = nullptr;
 }
 
-void Parametrized::add_param(unsigned int key, std::shared_ptr<Param> value) {
+Article::Article(Article* a) {
+    inherit = a;
+}
+
+void Article::set_inherit(Article* a) {
+    inherit = a;
+}
+
+void Article::add_param(unsigned int key, std::shared_ptr<Param> value) {
     std::pair<unsigned int, std::shared_ptr<Param> > p(key, value);
     params.insert(p);
 }
 
 template <>
-void Parametrized::set_param<Param*>(unsigned int key, Param* value) {
-    std::shared_ptr<Param> ptr(value);
+void Article::set_param<std::shared_ptr<Param> >(unsigned int key, std::shared_ptr<Param> value) {
     std::unordered_map<unsigned int, std::shared_ptr<Param> >::iterator it = params.find(key);
     if (it == params.end()) {
-        add_param(key, ptr);
+        add_param(key, value);
     } else {
-        if (key == (unsigned int)ParamSpecific::INHERIT) {
-            if (TypedParam<std::shared_ptr<Parametrized> >* inh =
-                    dynamic_cast<TypedParam<std::shared_ptr<Parametrized> >*>(value)) {
-                inherit = (inh->data).get();
-            } else {
-                throw std::string("Inherit must be of parametrized type.");
-            }
-        }
-        it->second = ptr;
+        it->second = value;
     }
 }
 
 template <>
-Param* Parametrized::get_param<Param*>(unsigned int key) {
+std::shared_ptr<Param> Article::get_param<std::shared_ptr<Param> >(unsigned int key) {
     std::unordered_map<unsigned int, std::shared_ptr<Param> >::iterator it = params.find(key);
     if (it == params.end()) {
         if (inherit != nullptr) {
-            return inherit->get_param<Param*>(key);
+            return inherit->get_param<std::shared_ptr<Param> >(key);
         } else {
             throw std::string("Attempted to access undefined parameter.");
         }
     } else {
-        return (it->second).get();
+        return it->second;
     }
 }
 
-bool Parametrized::check_param(unsigned int key) {
+bool Article::check_param(unsigned int key) {
     if (params.find(key) != params.end()) {
         return true;
     } else {
@@ -55,22 +53,13 @@ bool Parametrized::check_param(unsigned int key) {
     }
 }
 
-
-Article::Article(Parametrized* p) {
-    set_param((unsigned int)ParamSpecific::INHERIT, std::shared_ptr<Parametrized>(p));
+void Article::remove_param(unsigned int key) {
+    std::unordered_map<unsigned int, std::shared_ptr<Param> >::iterator it = params.find(key);
+    if (it != params.end()) { params.erase(it); }
 }
 
-template <>
-Param* Article::get_param_chain<Param*>(std::vector<unsigned int>* keys) {
-    Param* cur = nullptr;
-    for (std::vector<unsigned int>::iterator it = keys->begin(); it < keys->end(); ++it) {
-        if (it == keys->begin()) {
-            cur = get_param<Param*>(*it);
-        } else if (TypedParam<std::shared_ptr<Parametrized> >* typed = static_cast<TypedParam<std::shared_ptr<Parametrized> >*>(cur)) {
-            cur = typed->data->get_param<Param*>(*it);
-        } else {
-            throw std::string("Attempted to access member which does not exist.");
-        }
+void Article::assimilate(Article* a) {
+    for (std::unordered_map<unsigned int, std::shared_ptr<Param> >::iterator it = a->params.begin(); it != a->params.end(); ++it) {
+        set_param(it->first, it->second.get());
     }
-    return cur;
 }

@@ -3,7 +3,7 @@
 
 #include "param.h"
 
-class Options: public Parametrized {
+class Options: public Article {
 protected:
     // global options
     static unsigned short int FRAME_RATE;
